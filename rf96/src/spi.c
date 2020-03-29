@@ -9,7 +9,7 @@
 #include "gpio.h"
 #include "spi.h"
 //////////////////////////////SPI//////////////////////////////////////////
-
+//To do stm32f103 compatibility
 void spiInit()
 {
 	RCC->AHBENR |= RCC_AHBENR_GPIOAEN|RCC_AHBENR_GPIOBEN;		//en clock for gpio a and spi1
