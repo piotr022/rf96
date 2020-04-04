@@ -27,6 +27,9 @@ void clockInit();
 **
 **===========================================================================
 */
+
+uint8_t rssi_u8 = 0;
+rf96_config conf;
 int main(void)
 {
 	clockInit();
@@ -40,13 +43,12 @@ SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI0_PB;	//przypisanie szyny B do EXTI0
 	EXTI->IMR |= EXTI_IMR_MR0;
 	EXTI->FTSR |= EXTI_FTSR_TR0;
 /////////////////////////////////////for intterupt enf
-
+conf.freqency_u32 = 433000000UL;
+rf_set_params(&conf);
+//spiWrite(0x06,0x64);
+//spiWrite(0x07,0xC0);
+//spiWrite(0x08,0x11);
 uint32_t freq_u32 =0;
-uint8_t rssi_u8 = 0;
-spiWrite(0x06,0x64);
-spiWrite(0x07,0xC0);
-spiWrite(0x08,0x11);
-
 freq_u32 = 	(spiRead(0x08) |
 			(spiRead(0x07) << 8) |
 			(spiRead(0x06) << 16) ) * (float)61.035;
@@ -62,15 +64,22 @@ spiWrite(RegPreambleLsb, 40);
 spiWrite(RegPaRamp, (0x9 | (0b01 << 5)));
 spiWrite(RegDioMapping1, (0b01 << 6));	//enabling preamble detect pn DIO0
 spiWrite(RegDioMapping2, 0b1);			//setting to preamble detect
-//spiWrite(RegFifoThresh, 0x80);
-//spiWrite(RegSyncConfig, (spiRead(RegSyncConfig) & 0b00111111));
-//while(!(spiRead(RegOpMode) & FSK_SBY_MODE)){};
+
+spiWrite(RegRxConfig, 0b00011110);	//setting rxtrigger to preable detect
+									//and enabling agc
+spiWrite(RegPacketConfig1,0b10000000);
+spiWrite(RegSyncConfig,0b00001000);
 spiWrite(RegOpMode, FSK_SBY_MODE);
 
-//spiWrite(LR_RegFifoAddrPtr, spiRead(LR_RegFifoTxBaseAddr) );	//0x80
+
+spiWrite(RegSeqConfig1,0b10000110);
+spiWrite(RegSeqConfig2,0b01010010);
 
 
-spiWrite(RegOpMode,FSK_RX_MODE);
+int iii;//spiWrite(LR_RegFifoAddrPtr, spiRead(LR_RegFifoTxBaseAddr) );	//0x80
+
+
+//spiWrite(RegOpMode,FSK_RX_MODE);
 //SysTick_Config(8000000);
 NVIC_EnableIRQ(EXTI0_IRQn);
 	while (1)
@@ -183,6 +192,9 @@ __attribute__ ((interrupt)) void EXTI0_IRQHandler(void)
 {
 	if(EXTI->PR & EXTI_PR_PR0){
 		EXTI->PR = EXTI_PR_PR0;
+		uint8_t test[16];
+		for(int j=0; j <16; j++)
+					test[j]=spiRead(RegFIFO);
 		printMsg("RSSI: %i, IRQ1 %x, IRQ2 %x\n",(-1*spiRead(0x11)/2),spiRead(RegIrqFlags1),spiRead(RegIrqFlags2));
 	}
 }

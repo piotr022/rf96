@@ -12,7 +12,7 @@
 #define SX1278_MAX_PACKET	256
 #define SX1278_DEFAULT_TIMEOUT		3000
 
-
+#define F_STEP 61.035F
 /********************LoRa mode***************************/
 #define LR_RegFifo                                  0x00
 // Common settings
@@ -70,10 +70,6 @@
 /********************FSK/ook mode***************************/
 
 
-#define FSK_SBY_MODE 	0b00001001
-#define FSK_TX_MODE 	0b00001011
-#define FSK_RX_MODE 	0b00001101
-#define FSK_SLEEP_MODE 	0b00001000
 
 
 //registers
@@ -145,75 +141,18 @@
 #define  RegPaDac				0x4d
 #define  RegBitRateFrac			0x5d
 
+//values for OpMode register
+#define FSK_SBY_MODE 	0b00001001
+#define FSK_TX_MODE 	0b00001011
+#define FSK_RX_MODE 	0b00001101
+#define FSK_SLEEP_MODE 	0b00001000
 
+typedef struct{
+	uint32_t freqency_u32;
 
-//
-//#define FSK_SLEEP_MODE 		 0x00
-//#define FSK_STANDBY_MODE 	 0x01
-//#define FSK_TX_MODE 		 0x03
-//#define FSK_RX_MODE 		 0x05
-//
-//
+}rf96_config;
 
-
-
-
-
-
-
-
-
-/**********************************************************
- **Parameter table define
- **********************************************************/
-#define SX1278_433MHZ			0
-
-static const uint8_t SX1278_Frequency[1][3] = { { 0x6C, 0x80, 0x00 }, //434MHz
-		};
-
-#define SX1278_POWER_20DBM		0
-#define SX1278_POWER_17DBM		1
-#define SX1278_POWER_14DBM		2
-#define SX1278_POWER_11DBM		3
-
-static const uint8_t SX1278_Power[4] = { 0xFF, //20dbm
-		0xFC, //17dbm
-		0xF9, //14dbm
-		0xF6, //11dbm
-		};
-
-#define SX1278_LORA_SF_6		0
-#define SX1278_LORA_SF_7		1
-#define SX1278_LORA_SF_8		2
-#define SX1278_LORA_SF_9		3
-#define SX1278_LORA_SF_10		4
-#define SX1278_LORA_SF_11		5
-#define SX1278_LORA_SF_12		6
-
-static const uint8_t SX1278_SpreadFactor[7] = { 6, 7, 8, 9, 10, 11, 12 };
-
-#define	SX1278_LORA_BW_7_8KHZ		0
-#define	SX1278_LORA_BW_10_4KHZ		1
-#define	SX1278_LORA_BW_15_6KHZ		2
-#define	SX1278_LORA_BW_20_8KHZ		3
-#define	SX1278_LORA_BW_31_2KHZ		4
-#define	SX1278_LORA_BW_41_7KHZ		5
-#define	SX1278_LORA_BW_62_5KHZ		6
-#define	SX1278_LORA_BW_125KHZ		7
-#define	SX1278_LORA_BW_250KHZ		8
-#define	SX1278_LORA_BW_500KHZ		9
-
-static const uint8_t SX1278_LoRaBandwidth[10] = { 0, //   7.8KHz,
-		1, //  10.4KHz,
-		2, //  15.6KHz,
-		3, //  20.8KHz,
-		4, //  31.2KHz,
-		5, //  41.7KHz,
-		6, //  62.5KHz,
-		7, // 125.0KHz,
-		8, // 250.0KHz,
-		9  // 500.0KHz
-		};
+void rf_set_params(rf96_config * _conf);
 
 
 #endif /* RF96_H_ */
